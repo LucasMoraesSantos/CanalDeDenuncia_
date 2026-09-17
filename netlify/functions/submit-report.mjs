@@ -20,6 +20,36 @@ const json = (body, status = 200) =>
     headers: { "Content-Type": "application/json; charset=utf-8" },
   });
 
+const publicError = (message) => Object.assign(new Error(message), { isPublic: true });
+
+const getGoogleError = async (response) => {
+  const details = await response.text();
+  let apiMessage = "";
+
+  try {
+    apiMessage = JSON.parse(details).error?.message || "";
+  } catch {
+    // A resposta nem sempre é JSON; os detalhes completos permanecem apenas nos logs.
+  }
+
+  console.error("Google Sheets error:", response.status, details);
+
+  if (response.status === 403 && /disabled|has not been used|SERVICE_DISABLED/i.test(details)) {
+    return publicError("A Google Sheets API não está ativada no projeto da conta de serviço.");
+  }
+  if (response.status === 403) {
+    return publicError("Compartilhe a planilha com o e-mail da conta de serviço como Editor.");
+  }
+  if (response.status === 404) {
+    return publicError("A planilha configurada não foi encontrada pela conta de serviço.");
+  }
+  if (/Unable to parse range/i.test(apiMessage)) {
+    return publicError("A aba configurada não existe na planilha.");
+  }
+
+  return publicError("Não foi possível registrar a denúncia na planilha.");
+};
+
 const toBase64Url = (value) =>
   Buffer.from(typeof value === "string" ? value : JSON.stringify(value)).toString("base64url");
 
@@ -135,9 +165,30 @@ export default async (request) => {
 
     const protocol = `DEN-${randomUUID().split("-")[0].toUpperCase()}`;
     const createdAt = new Date().toISOString();
-    const sheetName = Netlify.env.get("GOOGLE_SHEET_NAME") || "Denuncias";
-    const range = encodeURIComponent(`${sheetName}!A:E`);
     const accessToken = await getAccessToken();
+    const configuredSheetName = Netlify.env.get("GOOGLE_SHEET_NAME")?.trim();
+    const metadataResponse = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}?fields=sheets.properties.title`,
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+
+    if (!metadataResponse.ok) throw await getGoogleError(metadataResponse);
+
+    const metadata = await metadataResponse.json();
+    const sheetNames = metadata.sheets?.map(({ properties }) => properties.title) || [];
+    const preferredSheetName = configuredSheetName || "Denuncias";
+    const sheetName = sheetNames.includes(preferredSheetName)
+      ? preferredSheetName
+      : configuredSheetName
+        ? null
+        : sheetNames[0];
+
+    if (!sheetName) {
+      throw publicError(`A aba “${preferredSheetName}” não foi encontrada na planilha.`);
+    }
+
+    const escapedSheetName = sheetName.replaceAll("'", "''");
+    const range = encodeURIComponent(`'${escapedSheetName}'!A:E`);
     const response = await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
       {
@@ -153,9 +204,7 @@ export default async (request) => {
     );
 
     if (!response.ok) {
-      const details = await response.text();
-      console.error("Google Sheets error:", response.status, details);
-      throw new Error("Não foi possível registrar a denúncia na planilha.");
+      throw await getGoogleError(response);
     }
 
     return json({ message: "Denúncia registrada com sucesso.", protocol }, 201);
@@ -167,8 +216,12 @@ export default async (request) => {
       "A chave privada do Google está inválida. Copie novamente o campo private_key sem aspas externas.",
       "Não foi possível autenticar no Google Planilhas.",
       "Não foi possível registrar a denúncia na planilha.",
+      "A Google Sheets API não está ativada no projeto da conta de serviço.",
+      "Compartilhe a planilha com o e-mail da conta de serviço como Editor.",
+      "A planilha configurada não foi encontrada pela conta de serviço.",
+      "A aba configurada não existe na planilha.",
     ];
-    const message = safeMessages.includes(error.message)
+    const message = error.isPublic || safeMessages.includes(error.message)
       ? error.message
       : "Erro interno ao registrar a denúncia.";
     return json({ message }, 500);

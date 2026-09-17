@@ -70,3 +70,9 @@ necessário separar o e-mail e a chave em duas variáveis.
 O sistema também corrige automaticamente chaves com quebras de linha duplicadamente
 escapadas ou transformadas em espaços pelo painel do provedor. Depois de alterar a
 variável, gere um novo deploy para que a Function receba o valor atualizado.
+
+Se `GOOGLE_SHEET_NAME` não estiver definida, a integração procura a aba `Denuncias`
+e, se ela não existir, utiliza automaticamente a primeira aba da planilha. Quando
+`GOOGLE_SHEET_NAME` estiver definida, seu valor deve ser exatamente igual ao nome
+da aba. Erros de permissão, API desativada, planilha ou aba inexistente são exibidos
+de forma específica no formulário.
