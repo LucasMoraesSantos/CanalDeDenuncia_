@@ -50,10 +50,19 @@ Em seguida:
 3. Compartilhe a planilha com o `client_email` da conta de serviço como **Editor**.
 4. No Netlify, cadastre as variáveis de ambiente abaixo:
    - `GOOGLE_SERVICE_ACCOUNT_EMAIL`: valor de `client_email` da chave JSON;
-   - `GOOGLE_PRIVATE_KEY`: valor de `private_key` da chave JSON;
+   - `GOOGLE_PRIVATE_KEY`: valor completo de `private_key`, começando em
+     `-----BEGIN PRIVATE KEY-----` e terminando em `-----END PRIVATE KEY-----`;
    - `GOOGLE_SHEET_NAME`: nome da aba (opcional; o padrão é `Denuncias`).
 5. Faça um novo deploy no Netlify para aplicar as variáveis.
 
 Nunca salve a chave JSON ou a chave privada no repositório. Nesta primeira
 integração, a planilha recebe os nomes das evidências selecionadas; o conteúdo dos
 arquivos ainda precisa de um armazenamento privado, como o Google Drive.
+
+### Erro `DECODER routines::unsupported`
+
+Esse erro indica que `GOOGLE_PRIVATE_KEY` foi colada em formato inválido. Remova
+aspas externas e espaços antes de `-----BEGIN PRIVATE KEY-----`. A integração
+aceita tanto quebras de linha reais quanto `\n`. Como alternativa, cadastre o JSON
+completo da conta de serviço em `GOOGLE_SERVICE_ACCOUNT_JSON`; nesse caso, não é
+necessário separar o e-mail e a chave em duas variáveis.
