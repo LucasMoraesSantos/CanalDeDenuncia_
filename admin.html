@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administração | Ouvidoria Ética</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <section class="login" id="login-view">
+      <form id="login-form" class="login-card">
+        <span class="shield">◆</span><p>Área restrita</p><h1>Painel administrativo</h1>
+        <label for="password">Senha de acesso</label>
+        <input id="password" type="password" required autocomplete="current-password" />
+        <button>Entrar no painel</button><small id="login-error" role="alert"></small>
+      </form>
+    </section>
+
+    <main class="dashboard" id="dashboard" hidden>
+      <header><div><p>Ouvidoria Ética</p><h1>Central de denúncias</h1></div><button class="secondary" id="logout">Sair</button></header>
+      <section class="metrics"><article><span>Total de relatos</span><strong id="total">0</strong></article><article><span>Pessoas cadastradas</span><strong id="people-count">0</strong></article><article><span>Com evidências</span><strong id="evidence-count">0</strong></article></section>
+      <nav><button class="tab active" data-tab="reports">Denúncias</button><button class="tab" data-tab="people">Gerenciar pessoas</button></nav>
+
+      <section id="reports-panel">
+        <div class="filters"><label>Buscar<input id="search" type="search" placeholder="Protocolo ou descrição" /></label><label>Pessoa<select id="person-filter"><option value="">Todas</option></select></label><label>De<input id="date-from" type="date" /></label><label>Até<input id="date-to" type="date" /></label></div>
+        <div id="reports" class="reports"></div><p id="empty" class="empty" hidden>Nenhuma denúncia encontrada.</p>
+      </section>
+
+      <section id="people-panel" hidden>
+        <div class="people-box"><div><h2>Pessoas relacionadas</h2><p>Estes nomes aparecem no formulário público.</p></div><form id="person-form"><input id="new-person" required maxlength="100" placeholder="Nome da pessoa" /><button>Adicionar</button></form><ul id="people-list"></ul></div>
+      </section>
+    </main>
+    <dialog id="viewer"><button id="close-viewer" aria-label="Fechar">×</button><div id="viewer-content"></div></dialog>
+    <script src="admin.js"></script>
+  </body>
+</html>

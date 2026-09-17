@@ -10,6 +10,22 @@ const toastTitle = document.querySelector("#toast-title");
 const toastMessage = document.querySelector("#toast-message");
 const submitButton = document.querySelector("#submit-button");
 const submitLabel = document.querySelector("#submit-label");
+const personSelect = document.querySelector("#person");
+
+const loadPeople = async () => {
+  try {
+    const response = await fetch("/.netlify/functions/people");
+    if (!response.ok) return;
+    const { people } = await response.json();
+    const placeholder = personSelect.options[0];
+    personSelect.replaceChildren(placeholder);
+    people.forEach((person) => personSelect.add(new Option(person, person)));
+  } catch {
+    // A lista presente no HTML continua disponível como fallback.
+  }
+};
+
+loadPeople();
 
 description.addEventListener("input", () => {
   characterCount.textContent = `${description.value.length} / 1500`;
@@ -73,14 +89,13 @@ form.addEventListener("submit", async (event) => {
   submitLabel.textContent = "Enviando...";
 
   try {
+    const payload = new FormData();
+    payload.append("person", form.elements.person.value);
+    payload.append("description", form.elements.description.value);
+    [...evidenceInput.files].forEach((file) => payload.append("evidence", file));
     const response = await fetch("/.netlify/functions/submit-report", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        person: form.elements.person.value,
-        description: form.elements.description.value,
-        evidenceNames: [...evidenceInput.files].map((file) => file.name),
-      }),
+      body: payload,
     });
     const result = await response.json();
 

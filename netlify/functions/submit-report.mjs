@@ -1,28 +1,18 @@
 import { createPrivateKey, createSign, randomUUID } from "node:crypto";
+import { getStore } from "@netlify/blobs";
 
-const SHEET_ID = "1ZInMLJ2Szf_OXQomQAIxYvyK4fmvxqTHD69a1bgREyo";
+export const SHEET_ID = "1ZInMLJ2Szf_OXQomQAIxYvyK4fmvxqTHD69a1bgREyo";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const SHEETS_SCOPE = "https://www.googleapis.com/auth/spreadsheets";
-const ALLOWED_PEOPLE = new Set([
-  "Lucas",
-  "João G.",
-  "Marcela",
-  "Agnys",
-  "Maju",
-  "Isabella",
-  "Peterson",
-  "Herick",
-]);
-
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
     headers: { "Content-Type": "application/json; charset=utf-8" },
   });
 
-const publicError = (message) => Object.assign(new Error(message), { isPublic: true });
+export const publicError = (message) => Object.assign(new Error(message), { isPublic: true });
 
-const getGoogleError = async (response) => {
+export const getGoogleError = async (response) => {
   const details = await response.text();
   let apiMessage = "";
 
@@ -85,7 +75,7 @@ export const normalizePrivateKey = (rawValue) => {
   return `-----BEGIN PRIVATE KEY-----\n${lines.join("\n")}\n-----END PRIVATE KEY-----`;
 };
 
-const getAccessToken = async () => {
+export const getAccessToken = async () => {
   let email = Netlify.env.get("GOOGLE_SERVICE_ACCOUNT_EMAIL");
   let rawPrivateKey = Netlify.env.get("GOOGLE_PRIVATE_KEY");
   const credentialsJson = Netlify.env.get("GOOGLE_SERVICE_ACCOUNT_JSON");
@@ -147,24 +137,44 @@ export default async (request) => {
   if (request.method !== "POST") return json({ message: "Método não permitido." }, 405);
 
   try {
-    const { person, description, evidenceNames = [] } = await request.json();
+    const contentType = request.headers.get("content-type") || "";
+    let person;
+    let description;
+    let evidenceFiles = [];
 
-    if (typeof person !== "string" || !ALLOWED_PEOPLE.has(person)) {
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await request.formData();
+      person = formData.get("person");
+      description = formData.get("description");
+      evidenceFiles = formData.getAll("evidence").filter((entry) => entry instanceof File);
+    } else {
+      const body = await request.json();
+      person = body.person;
+      description = body.description;
+    }
+
+    if (typeof person !== "string" || !person.trim() || person.length > 100) {
       return json({ message: "Selecione a pessoa relacionada." }, 400);
     }
     if (typeof description !== "string" || !description.trim() || description.length > 1500) {
       return json({ message: "Informe uma descrição válida de até 1500 caracteres." }, 400);
     }
-    if (
-      !Array.isArray(evidenceNames) ||
-      evidenceNames.length > 5 ||
-      evidenceNames.some((name) => typeof name !== "string" || name.length > 255)
-    ) {
-      return json({ message: "A lista de evidências é inválida." }, 400);
+    if (evidenceFiles.length > 5 || evidenceFiles.some((file) => file.size > 4 * 1024 * 1024)) {
+      return json({ message: "Envie no máximo 5 arquivos de até 4 MB cada." }, 400);
     }
 
     const protocol = `DEN-${randomUUID().split("-")[0].toUpperCase()}`;
     const createdAt = new Date().toISOString();
+    const evidenceStore = getStore("report-evidence");
+    const evidence = await Promise.all(
+      evidenceFiles.map(async (file) => {
+        const key = `${protocol}/${randomUUID()}`;
+        await evidenceStore.set(key, await file.arrayBuffer(), {
+          metadata: { name: file.name, type: file.type || "application/octet-stream" },
+        });
+        return { key, name: file.name, type: file.type || "application/octet-stream" };
+      }),
+    );
     const accessToken = await getAccessToken();
     const configuredSheetName = Netlify.env.get("GOOGLE_SHEET_NAME")?.trim();
     const metadataResponse = await fetch(
@@ -198,7 +208,7 @@ export default async (request) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          values: [[protocol, createdAt, person.trim(), description.trim(), evidenceNames.join(", ")]],
+          values: [[protocol, createdAt, person.trim(), description.trim(), JSON.stringify(evidence)]],
         }),
       },
     );

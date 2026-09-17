@@ -76,3 +76,14 @@ e, se ela não existir, utiliza automaticamente a primeira aba da planilha. Quan
 `GOOGLE_SHEET_NAME` estiver definida, seu valor deve ser exatamente igual ao nome
 da aba. Erros de permissão, API desativada, planilha ou aba inexistente são exibidos
 de forma específica no formulário.
+
+## Painel administrativo
+
+O painel está disponível em `/admin.html`. Cadastre uma senha forte no Netlify com
+o nome `ADMIN_PASSWORD`, habilitada para Functions, e faça um novo deploy. O painel
+permite consultar denúncias, filtrar por pessoa e período, visualizar evidências e
+gerenciar os nomes exibidos no formulário público.
+
+Os novos anexos são armazenados de forma privada no Netlify Blobs. O limite é de
+cinco arquivos de até 4 MB por denúncia. Registros criados antes desta versão
+possuem apenas o nome do arquivo na planilha e, portanto, não têm imagem disponível.
