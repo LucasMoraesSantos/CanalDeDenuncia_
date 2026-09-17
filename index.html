@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Canal seguro e confidencial para o envio de denúncias."
+    />
+    <title>Ouvidoria Ética | Canal de Denúncias</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main>
+      <section class="form-card" aria-labelledby="form-title">
+        <div class="card-heading">
+          <span class="step">01</span>
+          <div>
+            <p>Novo relato</p>
+            <h2 id="form-title">Conte o que aconteceu</h2>
+          </div>
+        </div>
+
+        <form id="report-form">
+          <div class="field">
+            <label for="person">Pessoa relacionada <span aria-hidden="true">*</span></label>
+            <div class="select-wrap">
+              <select id="person" name="person" required>
+                <option value="" selected disabled>Selecione um nome</option>
+                <option>Lucas</option>
+                <option>João G.</option>
+                <option>Marcela</option>
+                <option>Agnys</option>
+                <option>Maju</option>
+                <option>Isabella</option>
+                <option>Peterson</option>
+                <option>Herick</option>
+              </select>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
+            </div>
+            <small>Selecione a pessoa sobre a qual deseja fazer o relato.</small>
+          </div>
+
+          <div class="field">
+            <label for="description">Descrição da denúncia <span aria-hidden="true">*</span></label>
+            <textarea
+              id="description"
+              name="description"
+              maxlength="1500"
+              required
+              placeholder="Descreva a situação com o máximo de detalhes possível..."
+            ></textarea>
+            <div class="field-meta">
+              <small>Evite incluir informações pessoais desnecessárias.</small>
+              <small id="character-count">0 / 1500</small>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="evidence">Anexar evidências <span class="optional">Opcional</span></label>
+            <input id="evidence" name="evidence" type="file" multiple hidden accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
+            <label class="drop-zone" for="evidence" id="drop-zone">
+              <span class="upload-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v5h14v-5" /></svg>
+              </span>
+              <span><strong>Clique para anexar</strong> ou arraste os arquivos aqui</span>
+              <small>PDF, JPG, PNG ou DOC · Máximo 4 MB por arquivo</small>
+            </label>
+            <ul class="file-list" id="file-list" aria-live="polite"></ul>
+          </div>
+
+          <button id="submit-button" type="submit">
+            <span id="submit-label">Enviar denúncia</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+          </button>
+          <p class="form-note">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.8 2.9 8.6 7 10 4.1-1.4 7-5.2 7-10V6l-7-3Z" /><path d="M12 8v5m0 3h.01" /></svg>
+            Ao enviar, seu relato será encaminhado diretamente à equipe responsável.
+          </p>
+        </form>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">
+      <span id="toast-icon">✓</span>
+      <div><strong id="toast-title">Denúncia enviada.</strong><small id="toast-message"></small></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
