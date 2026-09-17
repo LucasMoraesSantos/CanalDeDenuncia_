@@ -4,9 +4,7 @@
   --green: #176b4d;
   --green-dark: #10563d;
   --mint: #daf1e7;
-  --cream: #f4f3ec;
   --line: #dfe4df;
-  --white: #fff;
 }
 
 * { box-sizing: border-box; }
@@ -16,66 +14,39 @@ body {
   min-width: 320px;
   color: var(--ink);
   background:
-    radial-gradient(circle at 8% 22%, rgba(183, 221, 205, .34), transparent 26rem),
-    linear-gradient(110deg, #f7f7f2 0%, #f0f3ed 54%, #ecf2ed 100%);
+    radial-gradient(circle at 50% 35%, rgba(218, 241, 231, .38), transparent 31rem),
+    #f3f5f0;
   font-family: "DM Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-body::before {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-image: radial-gradient(rgba(23, 107, 77, .11) .7px, transparent .7px);
-  background-size: 18px 18px;
-  content: "";
-  opacity: .32;
-  pointer-events: none;
-}
-
-.site-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: min(1160px, calc(100% - 48px));
-  margin: 0 auto;
-  padding: 26px 0;
-  border-bottom: 1px solid rgba(23, 35, 30, .12);
-}
-
-.brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
-.brand-mark { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 12px; color: white; background: var(--green); }
-.brand-mark svg { width: 25px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
-.brand strong, .brand small { display: block; }
-.brand strong { font-family: Manrope, sans-serif; font-size: 15px; letter-spacing: -.2px; }
-.brand small { margin-top: 1px; color: var(--muted); font-size: 11px; letter-spacing: .09em; text-transform: uppercase; }
-
-.secure-label { display: flex; align-items: center; gap: 8px; color: var(--green); font-size: 12px; font-weight: 600; }
-.secure-label svg { width: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; }
-
 main {
   display: grid;
-  grid-template-columns: minmax(0, .88fr) minmax(470px, 1fr);
-  gap: clamp(48px, 8vw, 110px);
-  align-items: center;
-  width: min(1160px, calc(100% - 48px));
-  min-height: calc(100vh - 162px);
-  margin: 0 auto;
-  padding: 52px 0 58px;
+  min-height: 100vh;
+  padding: 30px 20px;
+  place-items: center;
 }
 
-.hero { align-self: center; padding-bottom: 35px; }
-.eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 23px; color: var(--green); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
-.eyebrow span { width: 28px; height: 2px; background: var(--green); }
-.hero h1 { margin: 0 0 25px; font-family: Manrope, sans-serif; font-size: clamp(43px, 5vw, 65px); line-height: 1.04; letter-spacing: -.055em; }
-.hero h1 em { color: var(--green); font-family: Georgia, serif; font-weight: 400; letter-spacing: -.04em; }
-.hero > p { max-width: 500px; margin: 0; color: #58635e; font-size: 15px; line-height: 1.8; }
-.trust-list { display: flex; gap: 23px; margin-top: 34px; color: #33413a; font-size: 12px; font-weight: 600; }
-.trust-list span { display: flex; align-items: center; gap: 8px; }
-.trust-list i { display: grid; width: 20px; height: 20px; place-items: center; border-radius: 50%; color: var(--green); background: var(--mint); font-style: normal; }
+.form-card {
+  position: relative;
+  width: min(558px, 100%);
+  padding: 34px 38px 30px;
+  border: 1px solid rgba(23, 35, 30, .1);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .92);
+  box-shadow: 0 25px 70px rgba(38, 67, 54, .12);
+}
 
-.form-card { position: relative; padding: 34px 38px 30px; border: 1px solid rgba(23, 35, 30, .1); border-radius: 6px; background: rgba(255, 255, 255, .88); box-shadow: 0 25px 70px rgba(38, 67, 54, .11); backdrop-filter: blur(12px); }
-.form-card::before { position: absolute; top: 0; right: 38px; width: 70px; height: 4px; background: var(--green); content: ""; }
+.form-card::before {
+  position: absolute;
+  top: 0;
+  right: 38px;
+  width: 70px;
+  height: 4px;
+  background: var(--green);
+  content: "";
+}
+
 .card-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 25px; }
 .step { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; color: var(--green); background: var(--mint); font-family: Manrope, sans-serif; font-size: 12px; font-weight: 800; }
 .card-heading p { margin: 0 0 2px; color: var(--green); font-size: 10px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
@@ -110,11 +81,8 @@ button { display: flex; align-items: center; justify-content: center; gap: 12px;
 button:hover { background: var(--green-dark); transform: translateY(-1px); }
 button svg { width: 17px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.7; }
 .form-note { display: flex; align-items: center; justify-content: center; gap: 7px; margin: 12px 0 0; color: #8b9690; font-size: 9px; }
-.form-note svg { width: 14px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.5; }
+.form-note svg { width: 14px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.5; }
 
-footer { display: flex; justify-content: space-between; width: min(1160px, calc(100% - 48px)); margin: 0 auto; padding: 0 0 25px; color: #8b948f; font-size: 9px; letter-spacing: .04em; }
-footer span:last-child { display: flex; align-items: center; gap: 10px; }
-footer i { width: 2px; height: 2px; border-radius: 50%; background: #aab1ad; }
 .toast { position: fixed; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 11px; padding: 14px 18px; border: 1px solid #bed8cc; border-radius: 6px; background: white; box-shadow: 0 15px 40px rgba(21, 60, 43, .2); opacity: 0; transform: translateY(20px); transition: .3s; pointer-events: none; }
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast > span { display: grid; width: 27px; height: 27px; place-items: center; border-radius: 50%; color: white; background: var(--green); }
@@ -122,22 +90,10 @@ footer i { width: 2px; height: 2px; border-radius: 50%; background: #aab1ad; }
 .toast strong { font-size: 11px; }
 .toast small { margin-top: 2px; color: var(--muted); font-size: 9px; }
 
-@media (max-width: 860px) {
-  main { grid-template-columns: 1fr; width: min(600px, calc(100% - 36px)); padding-top: 58px; }
-  .hero { padding: 0; text-align: center; }
-  .hero > p { margin-inline: auto; }
-  .eyebrow, .trust-list { justify-content: center; }
-  .site-header, footer { width: calc(100% - 36px); }
-}
-
 @media (max-width: 520px) {
-  .secure-label { display: none; }
-  .site-header { padding: 18px 0; }
-  main { gap: 36px; padding: 45px 0; }
-  .hero h1 { font-size: 39px; }
-  .trust-list { gap: 12px; flex-wrap: wrap; }
+  main { padding: 18px; }
   .form-card { padding: 28px 20px 24px; }
+  .card-heading h2 { font-size: 19px; }
   .drop-zone { padding: 16px 10px; text-align: center; }
-  footer { justify-content: center; }
-  footer span:last-child { display: none; }
+  .form-note { align-items: flex-start; text-align: center; }
 }
