@@ -89,6 +89,9 @@ a quantidade de resultados e a soma de pontos negativos conforme os filtros.
 Na aba de denúncias, as colunas `F` e `G` são utilizadas respectivamente para
 `Status` e `Pontos`; elas são preenchidas automaticamente durante a avaliação.
 
+O botão **Atualizar** do painel busca novamente denúncias, pessoas, avaliações e
+pontuações sem precisar recarregar a página inteira com `F5`.
+
 Os novos anexos são armazenados de forma privada no Netlify Blobs. O limite é de
 cinco arquivos de até 4 MB por denúncia. Registros criados antes desta versão
 possuem apenas o nome do arquivo na planilha e, portanto, não têm imagem disponível.

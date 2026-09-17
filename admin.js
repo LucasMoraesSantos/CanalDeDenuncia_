@@ -94,6 +94,27 @@ const loadData = async () => {
   renderReports();
 };
 
+const refreshData = async () => {
+  const button = $("#refresh");
+  const label = $("#refresh-label");
+  button.disabled = true;
+  button.classList.add("loading");
+  label.textContent = "Atualizando...";
+  try {
+    await loadData();
+    label.textContent = "Atualizado";
+    window.setTimeout(() => {
+      label.textContent = "Atualizar";
+    }, 1500);
+  } catch (error) {
+    label.textContent = "Tentar novamente";
+    alert(error.message);
+  } finally {
+    button.disabled = false;
+    button.classList.remove("loading");
+  }
+};
+
 $("#login-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   state.password = $("#password").value;
@@ -115,6 +136,7 @@ $("#logout").addEventListener("click", () => {
   sessionStorage.clear();
   location.reload();
 });
+$("#refresh").addEventListener("click", refreshData);
 document.querySelectorAll(".tab").forEach((button) =>
   button.addEventListener("click", () => {
     document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab === button));
