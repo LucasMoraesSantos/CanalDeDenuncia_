@@ -21,3 +21,27 @@ campo **Build command** vazio. O diretório de publicação já está definido c
 Para visualizar a versão publicada, confirme no painel do Netlify que a branch de
 produção contém os arquivos `index.html`, `styles.css` e `script.js`. Depois,
 acesse o endereço exibido em **Site overview > Production deploys**.
+
+## Integração com o Google Planilhas
+
+O formulário envia cada denúncia para a aba `Denuncias` da planilha configurada no
+projeto. Crie essa aba e adicione, na primeira linha, as colunas nesta ordem:
+
+```text
+Protocolo | Data | Pessoa relacionada | Descrição | Evidências
+```
+
+Em seguida:
+
+1. No Google Cloud, crie ou selecione um projeto e ative a **Google Sheets API**.
+2. Crie uma conta de serviço e gere uma chave JSON.
+3. Compartilhe a planilha com o `client_email` da conta de serviço como **Editor**.
+4. No Netlify, cadastre as variáveis de ambiente abaixo:
+   - `GOOGLE_SERVICE_ACCOUNT_EMAIL`: valor de `client_email` da chave JSON;
+   - `GOOGLE_PRIVATE_KEY`: valor de `private_key` da chave JSON;
+   - `GOOGLE_SHEET_NAME`: nome da aba (opcional; o padrão é `Denuncias`).
+5. Faça um novo deploy no Netlify para aplicar as variáveis.
+
+Nunca salve a chave JSON ou a chave privada no repositório. Nesta primeira
+integração, a planilha recebe os nomes das evidências selecionadas; o conteúdo dos
+arquivos ainda precisa de um armazenamento privado, como o Google Drive.

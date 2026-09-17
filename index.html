@@ -75,8 +75,8 @@
             <ul class="file-list" id="file-list" aria-live="polite"></ul>
           </div>
 
-          <button type="submit">
-            Enviar denúncia
+          <button id="submit-button" type="submit">
+            <span id="submit-label">Enviar denúncia</span>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
           </button>
           <p class="form-note">
@@ -88,8 +88,8 @@
     </main>
 
     <div class="toast" id="toast" role="status" aria-live="polite">
-      <span>✓</span>
-      <div><strong>Relato pronto para envio.</strong><small>Esta é uma página de demonstração.</small></div>
+      <span id="toast-icon">✓</span>
+      <div><strong id="toast-title">Denúncia enviada.</strong><small id="toast-message"></small></div>
     </div>
 
     <script src="script.js"></script>
