@@ -14,13 +14,25 @@ Depois, acesse `http://localhost:8000`.
 
 ## Publicar no Netlify
 
-O projeto inclui um `netlify.toml` e não exige comando de build. Ao conectar este
-repositório ao Netlify, use a raiz do repositório como diretório base e deixe o
-campo **Build command** vazio. O diretório de publicação já está definido como `.`.
+O projeto inclui um `netlify.toml` com a configuração de publicação. Ao conectar
+este repositório ao Netlify, use a raiz do repositório como diretório base. O
+comando `npm run build` gera os arquivos estáticos em `dist`, que é o diretório de
+publicação configurado.
 
 Para visualizar a versão publicada, confirme no painel do Netlify que a branch de
 produção contém os arquivos `index.html`, `styles.css` e `script.js`. Depois,
 acesse o endereço exibido em **Site overview > Production deploys**.
+
+Se o Netlify exibir **Page not found**, confirme em **Build settings**:
+
+```text
+Build command: npm run build
+Publish directory: dist
+Functions directory: netlify/functions
+```
+
+Também confirme que a branch de produção contém este código. Depois, utilize
+**Deploys > Trigger deploy > Clear cache and deploy site**.
 
 ## Integração com o Google Planilhas
 
