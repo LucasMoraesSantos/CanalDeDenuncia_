@@ -33,13 +33,14 @@ const getReports = async () => {
   const configured = Netlify.env.get("GOOGLE_SHEET_NAME")?.trim();
   const title = configured || sheets.find(({ properties }) => properties.title === "Denuncias")?.properties.title || sheets.find(({ properties }) => properties.title !== "Pessoas")?.properties.title;
   if (!title) throw publicError("A aba de denúncias não foi encontrada.");
-  const range = encodeURIComponent(`'${title.replaceAll("'", "''")}'!A2:E`);
+  const range = encodeURIComponent(`'${title.replaceAll("'", "''")}'!A2:G`);
   const response = await googleFetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}`);
   const data = await response.json();
-  return (data.values || []).map(([protocol = "", date = "", person = "", description = "", rawEvidence = ""]) => {
+  return (data.values || []).map(([protocol = "", date = "", person = "", description = "", rawEvidence = "", status = "", rawPoints = "0"]) => {
     let evidence = [];
     try { evidence = JSON.parse(rawEvidence); } catch { if (rawEvidence) evidence = [{ name: rawEvidence, key: null }]; }
-    return { protocol, date, person, description, evidence };
+    const points = Number(rawPoints) || 0;
+    return { protocol, date, person, description, evidence, status, points };
   });
 };
 
@@ -93,6 +94,40 @@ export default async (request) => {
         await googleFetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${clearRange}?valueInputOption=RAW`, { method: "PUT", body: JSON.stringify({ values: updated.map((item) => [item]) }) });
       }
       return json({ people: updated });
+    }
+
+    if (resource === "evaluation" && request.method === "POST") {
+      const { protocol, accepted, points } = await request.json();
+      const validPoints = accepted === true && (points === -2 || points === -3);
+      if (typeof protocol !== "string" || (!validPoints && accepted !== false)) {
+        return json({ message: "Avaliação inválida." }, 400);
+      }
+
+      const sheets = await getSheets();
+      const configured = Netlify.env.get("GOOGLE_SHEET_NAME")?.trim();
+      const title = configured || sheets.find(({ properties }) => properties.title === "Denuncias")?.properties.title || sheets.find(({ properties }) => properties.title !== "Pessoas")?.properties.title;
+      if (!title) throw publicError("A aba de denúncias não foi encontrada.");
+      const escapedTitle = title.replaceAll("'", "''");
+      const protocolRange = encodeURIComponent(`'${escapedTitle}'!A2:A`);
+      const protocolsResponse = await googleFetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${protocolRange}`);
+      const protocols = ((await protocolsResponse.json()).values || []).flat();
+      const index = protocols.indexOf(protocol);
+      if (index < 0) return json({ message: "Denúncia não encontrada." }, 404);
+
+      const status = accepted ? "Aceitável" : "Não aceitável";
+      const savedPoints = accepted ? points : 0;
+      const row = index + 2;
+      const headerRange = encodeURIComponent(`'${escapedTitle}'!F1:G1`);
+      await googleFetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${headerRange}?valueInputOption=RAW`, {
+        method: "PUT",
+        body: JSON.stringify({ values: [["Status", "Pontos"]] }),
+      });
+      const evaluationRange = encodeURIComponent(`'${escapedTitle}'!F${row}:G${row}`);
+      await googleFetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${evaluationRange}?valueInputOption=RAW`, {
+        method: "PUT",
+        body: JSON.stringify({ values: [[status, savedPoints]] }),
+      });
+      return json({ protocol, status, points: savedPoints });
     }
 
     return json({ reports: await getReports() });

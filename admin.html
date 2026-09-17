@@ -21,7 +21,13 @@
 
     <main class="dashboard" id="dashboard" hidden>
       <header><div><p>Ouvidoria Ética</p><h1>Central de denúncias</h1></div><button class="secondary" id="logout">Sair</button></header>
-      <section class="metrics"><article><span>Total de relatos</span><strong id="total">0</strong></article><article><span>Pessoas cadastradas</span><strong id="people-count">0</strong></article><article><span>Com evidências</span><strong id="evidence-count">0</strong></article></section>
+      <section class="metrics">
+        <article><span>Total de relatos</span><strong id="total">0</strong></article>
+        <article><span>Resultados do filtro</span><strong id="filtered-total">0</strong></article>
+        <article><span>Pontos negativos</span><strong id="negative-points">0</strong></article>
+        <article><span>Pessoas cadastradas</span><strong id="people-count">0</strong></article>
+        <article><span>Com evidências</span><strong id="evidence-count">0</strong></article>
+      </section>
       <nav><button class="tab active" data-tab="reports">Denúncias</button><button class="tab" data-tab="people">Gerenciar pessoas</button></nav>
 
       <section id="reports-panel">
