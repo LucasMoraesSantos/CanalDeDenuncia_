@@ -66,3 +66,7 @@ aspas externas e espaços antes de `-----BEGIN PRIVATE KEY-----`. A integração
 aceita tanto quebras de linha reais quanto `\n`. Como alternativa, cadastre o JSON
 completo da conta de serviço em `GOOGLE_SERVICE_ACCOUNT_JSON`; nesse caso, não é
 necessário separar o e-mail e a chave em duas variáveis.
+
+O sistema também corrige automaticamente chaves com quebras de linha duplicadamente
+escapadas ou transformadas em espaços pelo painel do provedor. Depois de alterar a
+variável, gere um novo deploy para que a Function receba o valor atualizado.

@@ -33,18 +33,26 @@ export const normalizePrivateKey = (rawValue) => {
     value = JSON.parse(value);
   }
 
-  value = value.replace(/\\n/g, "\n").replace(/\r/g, "").trim();
+  value = value.replace(/\\+r?\\*n/g, "\n").replace(/\r/g, "").trim();
 
   if (!value.includes("BEGIN") && /^[A-Za-z0-9+/=]+$/.test(value)) {
     const decoded = Buffer.from(value, "base64").toString("utf8").trim();
     if (decoded.includes("BEGIN")) value = decoded;
   }
 
-  if (!value.includes("-----BEGIN PRIVATE KEY-----")) {
+  const pemMatch = value.match(
+    /-----BEGIN PRIVATE KEY-----([\s\S]*?)-----END PRIVATE KEY-----/,
+  );
+
+  if (!pemMatch) {
     throw new Error("A variável GOOGLE_PRIVATE_KEY não contém uma chave privada válida.");
   }
 
-  return value;
+  const body = pemMatch[1].replace(/[^A-Za-z0-9+/=]/g, "");
+  if (!body) throw new Error("A variável GOOGLE_PRIVATE_KEY está vazia.");
+
+  const lines = body.match(/.{1,64}/g);
+  return `-----BEGIN PRIVATE KEY-----\n${lines.join("\n")}\n-----END PRIVATE KEY-----`;
 };
 
 const getAccessToken = async () => {
