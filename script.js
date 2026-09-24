@@ -51,7 +51,21 @@ const showFiles = (files) => {
   });
 };
 
-evidenceInput.addEventListener("change", () => showFiles(evidenceInput.files));
+evidenceInput.addEventListener("change", () => {
+  dropZone.classList.remove("invalid");
+  evidenceInput.setCustomValidity("");
+  showFiles(evidenceInput.files);
+});
+
+evidenceInput.addEventListener("invalid", () => {
+  dropZone.classList.add("invalid");
+  evidenceInput.setCustomValidity("Anexe pelo menos uma imagem para enviar a denúncia.");
+  showToast({
+    title: "Evidência obrigatória.",
+    message: "Anexe pelo menos uma imagem JPG, PNG ou WEBP.",
+    error: true,
+  });
+});
 
 ["dragenter", "dragover"].forEach((eventName) => {
   dropZone.addEventListener(eventName, (event) => {

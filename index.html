@@ -63,8 +63,8 @@
           </div>
 
           <div class="field">
-            <label for="evidence">Anexar imagem <span aria-hidden="true">*</span></label>
-            <input id="evidence" name="evidence" type="file" multiple hidden accept="image/jpeg,image/png,image/webp" />
+            <label for="evidence">Anexar evidência <span class="required-badge">Obrigatório</span></label>
+            <input id="evidence" class="file-input" name="evidence" type="file" multiple required aria-required="true" accept="image/jpeg,image/png,image/webp" />
             <label class="drop-zone" for="evidence" id="drop-zone">
               <span class="upload-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v5h14v-5" /></svg>
