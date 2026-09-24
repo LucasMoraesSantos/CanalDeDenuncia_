@@ -92,6 +92,7 @@ Na aba de denúncias, as colunas `F` e `G` são utilizadas respectivamente para
 O botão **Atualizar** do painel busca novamente denúncias, pessoas, avaliações e
 pontuações sem precisar recarregar a página inteira com `F5`.
 
-Os novos anexos são armazenados de forma privada no Netlify Blobs. O limite é de
-cinco arquivos de até 4 MB por denúncia. Registros criados antes desta versão
+Os novos anexos são armazenados de forma privada no Netlify Blobs. Toda denúncia
+deve conter pelo menos uma imagem JPG, PNG ou WEBP; o limite é de cinco imagens de
+até 4 MB cada. Registros criados antes desta versão
 possuem apenas o nome do arquivo na planilha e, portanto, não têm imagem disponível.

@@ -4,6 +4,7 @@ import { getStore } from "@netlify/blobs";
 export const SHEET_ID = "1ZInMLJ2Szf_OXQomQAIxYvyK4fmvxqTHD69a1bgREyo";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const SHEETS_SCOPE = "https://www.googleapis.com/auth/spreadsheets";
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
@@ -159,8 +160,16 @@ export default async (request) => {
     if (typeof description !== "string" || !description.trim() || description.length > 1500) {
       return json({ message: "Informe uma descrição válida de até 1500 caracteres." }, 400);
     }
-    if (evidenceFiles.length > 5 || evidenceFiles.some((file) => file.size > 4 * 1024 * 1024)) {
-      return json({ message: "Envie no máximo 5 arquivos de até 4 MB cada." }, 400);
+    if (evidenceFiles.length === 0) {
+      return json({ message: "Anexe pelo menos uma imagem para enviar a denúncia." }, 400);
+    }
+    if (
+      evidenceFiles.length > 5 ||
+      evidenceFiles.some(
+        (file) => file.size > 4 * 1024 * 1024 || !ALLOWED_IMAGE_TYPES.has(file.type),
+      )
+    ) {
+      return json({ message: "Envie até 5 imagens JPG, PNG ou WEBP de no máximo 4 MB cada." }, 400);
     }
 
     const protocol = `DEN-${randomUUID().split("-")[0].toUpperCase()}`;

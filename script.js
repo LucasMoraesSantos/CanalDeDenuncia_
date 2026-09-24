@@ -36,6 +36,8 @@ const formatSize = (bytes) => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
+const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+
 const showFiles = (files) => {
   fileList.replaceChildren();
   [...files].forEach((file) => {
@@ -85,6 +87,25 @@ const showToast = ({ title, message, error = false }) => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
+  const evidenceFiles = [...evidenceInput.files];
+  if (evidenceFiles.length === 0) {
+    showToast({
+      title: "Imagem obrigatória.",
+      message: "Anexe pelo menos uma imagem para enviar a denúncia.",
+      error: true,
+    });
+    evidenceInput.click();
+    return;
+  }
+  if (evidenceFiles.some((file) => !allowedImageTypes.has(file.type))) {
+    showToast({
+      title: "Formato inválido.",
+      message: "Envie somente imagens JPG, PNG ou WEBP.",
+      error: true,
+    });
+    return;
+  }
+
   submitButton.disabled = true;
   submitLabel.textContent = "Enviando...";
 
@@ -92,7 +113,7 @@ form.addEventListener("submit", async (event) => {
     const payload = new FormData();
     payload.append("person", form.elements.person.value);
     payload.append("description", form.elements.description.value);
-    [...evidenceInput.files].forEach((file) => payload.append("evidence", file));
+    evidenceFiles.forEach((file) => payload.append("evidence", file));
     const response = await fetch("/.netlify/functions/submit-report", {
       method: "POST",
       body: payload,
