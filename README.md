@@ -83,7 +83,8 @@ O painel está disponível em `/admin.html`. Cadastre uma senha forte no Netlify
 o nome `ADMIN_PASSWORD`, habilitada para Functions, e faça um novo deploy. O painel
 permite consultar denúncias, filtrar por pessoa e período, visualizar evidências e
 gerenciar os nomes exibidos no formulário público. Cada denúncia também pode ser
-classificada como não aceitável ou aceitável com `-2`/`-3` pontos. O painel mostra
+classificada como não aceitável ou aceitável com uma nota de `1` a `10`, que é
+sempre salva como pontuação negativa (`-1` a `-10`). O painel mostra
 a quantidade de resultados e a soma de pontos negativos conforme os filtros.
 
 Na aba de denúncias, as colunas `F` e `G` são utilizadas respectivamente para

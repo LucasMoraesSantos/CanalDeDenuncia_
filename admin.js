@@ -70,8 +70,10 @@ const renderReports = () => {
         <div class="evaluation" data-protocol="${escapeHtml(item.protocol)}">
           <span>Esta denúncia é aceitável?</span>
           <button data-accepted="false" data-points="0">Não aceitável</button>
-          <button data-accepted="true" data-points="-2">Aceitável · -2</button>
-          <button data-accepted="true" data-points="-3">Aceitável · -3</button>
+          <label class="score-field">Nota negativa
+            <input class="score-input" type="number" min="1" max="10" step="1" value="${Math.abs(item.points) || 1}" required aria-label="Nota negativa de 1 a 10" />
+          </label>
+          <button data-accepted="true">Marcar como aceitável</button>
         </div>
       </article>`;
     })
@@ -173,6 +175,13 @@ $("#reports").addEventListener("click", async (event) => {
   const evaluationButton = event.target.closest(".evaluation button");
   if (evaluationButton) {
     const container = evaluationButton.closest(".evaluation");
+    const accepted = evaluationButton.dataset.accepted === "true";
+    const scoreInput = container.querySelector(".score-input");
+    const score = Number(scoreInput.value);
+    if (accepted && (!Number.isInteger(score) || score < 1 || score > 10)) {
+      scoreInput.reportValidity();
+      return;
+    }
     container.querySelectorAll("button").forEach((button) => (button.disabled = true));
     try {
       const response = await api("evaluation", {
@@ -180,8 +189,8 @@ $("#reports").addEventListener("click", async (event) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           protocol: container.dataset.protocol,
-          accepted: evaluationButton.dataset.accepted === "true",
-          points: Number(evaluationButton.dataset.points),
+          accepted,
+          points: accepted ? -score : 0,
         }),
       });
       const updated = await response.json();

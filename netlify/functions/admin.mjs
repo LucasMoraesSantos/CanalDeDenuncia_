@@ -98,7 +98,8 @@ export default async (request) => {
 
     if (resource === "evaluation" && request.method === "POST") {
       const { protocol, accepted, points } = await request.json();
-      const validPoints = accepted === true && (points === -2 || points === -3);
+      const validPoints =
+        accepted === true && Number.isInteger(points) && points >= -10 && points <= -1;
       if (typeof protocol !== "string" || (!validPoints && accepted !== false)) {
         return json({ message: "Avaliação inválida." }, 400);
       }
